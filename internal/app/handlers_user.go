@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nourabuild/relays-api/internal/sdk/middleware"
@@ -30,20 +29,13 @@ func (a *App) HandleMe(c *gin.Context) {
 		}
 
 		// User not found locally — fetch from auth service and create
-		authHeader := c.GetHeader("Authorization")
-		parts := strings.SplitN(authHeader, " ", 2)
-		if len(parts) != 2 {
-			writeError(c, http.StatusUnauthorized, "unauthorized", nil)
-			return
-		}
-
 		req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodGet, "https://api.auth.noura.software/api/v1/user/me", nil)
 		if err != nil {
 			a.toSentry(c, "me", "http", sentry.LevelError, err)
 			writeError(c, http.StatusInternalServerError, "internal_auth_request_error", nil)
 			return
 		}
-		req.Header.Set("Authorization", "Bearer "+parts[1])
+		req.Header.Set("Authorization", c.GetHeader("Authorization"))
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
