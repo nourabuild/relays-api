@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nourabuild/iam-service/internal/sdk/middleware"
-	"github.com/nourabuild/iam-service/internal/sdk/sqldb"
-	"github.com/nourabuild/iam-service/internal/services/sentry"
+	"github.com/nourabuild/relays-api/internal/sdk/middleware"
+	"github.com/nourabuild/relays-api/internal/sdk/sqldb"
+	"github.com/nourabuild/relays-api/internal/services/sentry"
 	"golang.org/x/crypto/bcrypt"
 )
 

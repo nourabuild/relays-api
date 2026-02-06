@@ -3,7 +3,7 @@ package app
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/nourabuild/iam-service/internal/sdk/middleware"
+	"github.com/nourabuild/relays-api/internal/sdk/middleware"
 )
 
 // ----------------------------------------------------------------------------

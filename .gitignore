@@ -48,7 +48,7 @@ temp/
 tmp/
 
 # Main binary (project-specific)
-iam-service
+relays-api
 
 
 vendor

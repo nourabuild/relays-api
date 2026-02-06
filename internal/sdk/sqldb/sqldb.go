@@ -13,7 +13,7 @@ import (
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/nourabuild/iam-service/internal/sdk/models"
+	"github.com/nourabuild/relays-api/internal/sdk/models"
 )
 
 // lib/pq errorCodeNames

@@ -1,10 +1,10 @@
 package app
 
 import (
-	"github.com/nourabuild/iam-service/internal/sdk/sqldb"
-	"github.com/nourabuild/iam-service/internal/services/jwt"
-	"github.com/nourabuild/iam-service/internal/services/mailtrap"
-	"github.com/nourabuild/iam-service/internal/services/sentry"
+	"github.com/nourabuild/relays-api/internal/sdk/sqldb"
+	"github.com/nourabuild/relays-api/internal/services/jwt"
+	"github.com/nourabuild/relays-api/internal/services/mailtrap"
+	"github.com/nourabuild/relays-api/internal/services/sentry"
 )
 
 type App struct {

@@ -1,4 +1,4 @@
-module github.com/nourabuild/iam-service
+module github.com/nourabuild/relays-api
 
 go 1.25.4
 

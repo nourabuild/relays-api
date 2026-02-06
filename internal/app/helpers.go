@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nourabuild/iam-service/internal/services/sentry"
+	"github.com/nourabuild/relays-api/internal/services/sentry"
 )
 
 type passwordComplexity struct {

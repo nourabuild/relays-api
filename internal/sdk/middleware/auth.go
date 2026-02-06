@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nourabuild/iam-service/internal/services/jwt"
+	"github.com/nourabuild/relays-api/internal/services/jwt"
 )
 
 const (
