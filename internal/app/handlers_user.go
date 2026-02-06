@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -69,6 +70,8 @@ func (a *App) HandleMe(c *gin.Context) {
 			writeError(c, http.StatusInternalServerError, "internal_auth_decode_error", nil)
 			return
 		}
+
+		fmt.Printf("Creating local user for auth service user: %+v\n", authUser)
 
 		user, err = a.db.CreateUser(c.Request.Context(), models.NewUser{
 			ID:      authUser.ID,
