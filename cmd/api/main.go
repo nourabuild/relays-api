@@ -51,19 +51,6 @@ func run(logger *slog.Logger) error {
 	// 5. Initialize JWT service
 	jwtService := jwt.NewTokenService()
 
-	// // TEST: Validate external token
-	// testToken := ""
-	// fmt.Println("\n=== Testing with Updated Secret ===")
-	// claims, err := jwtService.ParseAccessToken(ctx, testToken)
-	// if err != nil {
-	// 	fmt.Printf("❌ FAILED: %v\n\n", err)
-	// } else {
-	// 	fmt.Printf("✅ SUCCESS\n")
-	// 	fmt.Printf("   User ID: %s\n", claims.Subject)
-	// 	fmt.Printf("   Is Admin: %v\n", claims.IsAdmin)
-	// 	fmt.Printf("   Expires: %v\n\n", claims.ExpiresAt.Time)
-	// }
-
 	// 6. Initialize Mailtrap service
 	emailService := mailtrap.NewMailtrapService()
 

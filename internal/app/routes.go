@@ -30,6 +30,7 @@ func (a *App) RegisterRoutes() *gin.Engine {
 
 		// User routes (protected - requires authentication)
 		user := v1.Group("/user")
+		user.Use(middleware.Authenticate(a.jwt))
 		{
 			user.GET("/me", a.HandleMe)
 			user.POST("/me/password/change", a.HandlePasswordChange)
