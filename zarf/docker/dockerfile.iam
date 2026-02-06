@@ -4,7 +4,7 @@ FROM golang:1.25-alpine AS build_iam
 ENV CGO_ENABLED=0
 ARG BUILD_REF
 
-WORKDIR /iam-service
+WORKDIR /relays-api
 
 ## Cache deps
 COPY go.mod go.sum ./
@@ -14,8 +14,8 @@ RUN go mod download
 COPY . .
 
 ## Build binary
-WORKDIR /iam-service/cmd/api
-RUN go build -o /iam-service/api \
+WORKDIR /relays-api/cmd/api
+RUN go build -o /relays-api/api \
     -ldflags "-s -w -X main.build=${BUILD_REF}"
 
 # Runtime stage
@@ -25,14 +25,14 @@ ARG BUILD_DATE
 ARG BUILD_REF
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="iam-service" \
+      org.opencontainers.image.title="relays-api" \
       org.opencontainers.image.authors="Shohin Abdulkhamidov <shohin@noura.software>" \
-      org.opencontainers.image.source="https://github.com/nourabuild/iam-service" \
+      org.opencontainers.image.source="https://github.com/nourabuild/relays-api" \
       org.opencontainers.image.revision="${BUILD_REF}" \
       org.opencontainers.image.vendor="Noura"
 
-WORKDIR /iam-service
+WORKDIR /relays-api
 
-COPY --from=build_iam /iam-service/api /iam-service/api
+COPY --from=build_iam /relays-api/api /relays-api/api
 
-ENTRYPOINT ["/iam-service/api"]
+ENTRYPOINT ["/relays-api/api"]

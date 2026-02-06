@@ -1,13 +1,17 @@
 package app
 
 import (
-	"context"
-	"time"
+	"errors"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nourabuild/iam-service/internal/sdk/models"
 	"github.com/nourabuild/iam-service/internal/services/sentry"
 )
+
+type passwordComplexity struct {
+	hasUpper   bool
+	hasNumber  bool
+	hasSpecial bool
+}
 
 func writeError(c *gin.Context, status int, errCode string, details map[string]string) {
 	response := gin.H{
@@ -21,15 +25,43 @@ func writeError(c *gin.Context, status int, errCode string, details map[string]s
 	c.JSON(status, response)
 }
 
-// =============================================================================
-func (a *App) storeRefreshToken(ctx context.Context, userID, refreshToken string, ttl time.Duration) error {
-	expiresAt := time.Now().UTC().Add(ttl)
-	_, err := a.db.CreateRefreshToken(ctx, models.NewRefreshToken{
-		UserID:    userID,
-		Token:     []byte(refreshToken),
-		ExpiresAt: expiresAt,
-	})
-	return err
+// validatePassword validates password complexity requirements
+func validatePassword(password string) error {
+	if len(password) < minPasswordLength {
+		return errors.New("password_too_short")
+	}
+
+	complexity := passwordComplexityFlags([]byte(password))
+	if !complexity.hasUpper {
+		return errors.New("password_must_contain_uppercase")
+	}
+	if !complexity.hasNumber {
+		return errors.New("password_must_contain_number")
+	}
+	if !complexity.hasSpecial {
+		return errors.New("password_must_contain_special_character")
+	}
+
+	return nil
+}
+
+func passwordComplexityFlags(password []byte) passwordComplexity {
+	var complexity passwordComplexity
+	for _, char := range password {
+		switch {
+		case char >= 'A' && char <= 'Z':
+			complexity.hasUpper = true
+		case char >= '0' && char <= '9':
+			complexity.hasNumber = true
+		case (char >= '!' && char <= '/') || (char >= ':' && char <= '@') || (char >= '[' && char <= '`') || (char >= '{' && char <= '~'):
+			complexity.hasSpecial = true
+		}
+		if complexity.hasUpper && complexity.hasNumber && complexity.hasSpecial {
+			break
+		}
+	}
+
+	return complexity
 }
 
 // =============================================================================

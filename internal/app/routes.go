@@ -28,22 +28,12 @@ func (a *App) RegisterRoutes() *gin.Engine {
 			health.GET("/liveness", a.HandleLiveness)
 		}
 
-		// Auth routes (public)
-		auth := v1.Group("/auth")
-		{
-			auth.POST("/register", a.HandleRegister)
-			auth.POST("/login", a.HandleLogin)
-			auth.POST("/refresh", a.HandleRefresh)
-			auth.POST("/password/forgot", a.HandleForgotPassword) // Request password reset email (public).
-			auth.POST("/password/reset", a.HandleResetPassword)   // Complete password reset with email token (public).
-		}
-
 		// User routes (protected - requires authentication)
 		user := v1.Group("/user")
 		user.Use(middleware.Authenticate(a.jwt))
 		{
 			user.GET("/me", a.HandleMe)
-			user.POST("/me/password/change", a.HandlePasswordChange) // Change password with current password (authenticated).
+			user.POST("/me/password/change", a.HandlePasswordChange)
 		}
 
 		// Admin routes (protected - requires admin role)
@@ -51,8 +41,8 @@ func (a *App) RegisterRoutes() *gin.Engine {
 		admin.Use(middleware.Authenticate(a.jwt))
 		admin.Use(middleware.AuthorizeAdmin())
 		{
-			admin.GET("/users", a.HandleListUsers)
-			admin.POST("/:user_id/roles/grant", a.HandleGrantAdminRole)
+			// admin.GET("/users", a.HandleListUsers)
+			// admin.POST("/:user_id/roles/grant", a.HandleGrantAdminRole)
 		}
 	}
 

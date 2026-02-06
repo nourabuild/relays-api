@@ -1,20 +1,21 @@
-CREATE SCHEMA IF NOT EXISTS auth;
+CREATE SCHEMA IF NOT EXISTS todos;
 
-CREATE TABLE IF NOT EXISTS auth.users (
+CREATE TABLE IF NOT EXISTS todos.users (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name TEXT NOT NULL,
     account TEXT NOT NULL,
     email TEXT NOT NULL,
     password TEXT NOT NULL,
-    is_verified BOOLEAN DEFAULT FALSE,
     bio TEXT,
     dob DATE,
     city TEXT,
     phone TEXT,
+    is_admin BOOLEAN DEFAULT FALSE,
+    avatar_photo_id INTEGER DEFAULT NULL ,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, 
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(email, account)
 );
 
-CREATE INDEX IF NOT EXISTS idx_users_email ON auth.users(email);
-CREATE INDEX IF NOT EXISTS idx_users_account ON auth.users(account);
+CREATE INDEX IF NOT EXISTS idx_users_email ON todos.users(email);
+CREATE INDEX IF NOT EXISTS idx_users_account ON todos.users(account);

@@ -11,7 +11,7 @@ GOLANG          := golang:1.25
 ALPINE          := alpine:3.22
 
 POSTGRES        := postgres:17.2
-SERVICE_APP    	:= iam-service
+SERVICE_APP    	:= relays-api
 BASE_IMAGE_NAME := insidious000
 VERSION         := 0.0.1
 API_IMAGE       := $(BASE_IMAGE_NAME)/$(SERVICE_APP):$(VERSION)

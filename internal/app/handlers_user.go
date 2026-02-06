@@ -11,6 +11,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const (
+	minPasswordLength = 8
+	bcryptCost        = bcrypt.DefaultCost
+)
+
 func (a *App) HandleMe(c *gin.Context) {
 	userID, err := middleware.GetUserID(c)
 	if err != nil {
@@ -26,38 +31,6 @@ func (a *App) HandleMe(c *gin.Context) {
 			return
 		}
 		writeError(c, http.StatusInternalServerError, "internal_verify_user_error", nil)
-		return
-	}
-
-	c.JSON(http.StatusOK, user)
-}
-
-func (a *App) HandleListUsers(c *gin.Context) {
-	users, err := a.db.ListUsers(c.Request.Context())
-	if err != nil {
-		a.toSentry(c, "list_users", "db", sentry.LevelError, err)
-		writeError(c, http.StatusInternalServerError, "internal_retrieve_users_error", nil)
-		return
-	}
-
-	c.JSON(http.StatusOK, users)
-}
-
-func (a *App) HandleGrantAdminRole(c *gin.Context) {
-	userID := c.Param("user_id")
-	if userID == "" {
-		writeError(c, http.StatusBadRequest, "invalid_user_id", nil)
-		return
-	}
-
-	user, err := a.db.PromoteUserToAdmin(c.Request.Context(), userID)
-	if err != nil {
-		a.toSentry(c, "promote_user", "db", sentry.LevelError, err)
-		if errors.Is(err, sqldb.ErrDBNotFound) {
-			writeError(c, http.StatusUnauthorized, "user_not_found", nil)
-			return
-		}
-		writeError(c, http.StatusInternalServerError, "internal_promote_user_error", nil)
 		return
 	}
 

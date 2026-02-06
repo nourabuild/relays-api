@@ -1,1 +1,0 @@
-ALTER TABLE auth.users ADD COLUMN is_verified BOOLEAN DEFAULT FALSE;
