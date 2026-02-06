@@ -26,7 +26,6 @@ type User struct {
 	Name          string    `json:"name"`
 	Account       string    `json:"account"`
 	Email         string    `json:"email"`
-	Password      []byte    `json:"-"`
 	Bio           *string   `json:"bio,omitempty"`
 	DOB           *string   `json:"dob,omitempty"`
 	City          *string   `json:"city,omitempty"`
@@ -38,12 +37,10 @@ type User struct {
 }
 
 type NewUser struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	Account         string `json:"account"`
-	Email           string `json:"email"`
-	Password        []byte `json:"password"`
-	PasswordConfirm []byte `json:"password_confirm"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Account string `json:"account"`
+	Email   string `json:"email"`
 }
 
 // PasswordResetToken represents a password reset token for a user

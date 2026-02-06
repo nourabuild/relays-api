@@ -33,7 +33,6 @@ func (a *App) RegisterRoutes() *gin.Engine {
 		user.Use(middleware.Authenticate(a.jwt))
 		{
 			user.GET("/me", a.HandleMe)
-			user.POST("/me/password/change", a.HandlePasswordChange)
 		}
 	}
 

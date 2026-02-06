@@ -66,9 +66,6 @@ type Service interface {
 	GetPasswordResetToken(ctx context.Context, token string) (models.PasswordResetToken, error)
 	MarkPasswordResetTokenAsUsed(ctx context.Context, tokenID string) error
 	DeleteExpiredPasswordResetTokens(ctx context.Context) error
-
-	// Password operations
-	UpdateUserPassword(ctx context.Context, userID string, newPassword []byte) error
 }
 
 type service struct {
@@ -177,7 +174,6 @@ func (s *service) GetUserByID(ctx context.Context, userID string) (models.User, 
 			name,
 			account,
 			email,
-			password,
 			bio,
 			dob,
 			city,
@@ -209,7 +205,6 @@ func (s *service) GetUserByEmail(ctx context.Context, email string) (models.User
 			name,
 			account,
 			email,
-			password,
 			bio,
 			dob,
 			city,
@@ -241,7 +236,6 @@ func (s *service) GetUserByAccount(ctx context.Context, account string) (models.
 			name,
 			account,
 			email,
-			password,
 			bio,
 			dob,
 			city,
@@ -268,9 +262,9 @@ func (s *service) GetUserByAccount(ctx context.Context, account string) (models.
 // CreateUser inserts a new user into the database.
 func (s *service) CreateUser(ctx context.Context, newUser models.NewUser) (models.User, error) {
 	const query = `
-		INSERT INTO todos.users (id, name, account, email, password, is_admin)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id::text, name, account, email, password, bio, dob, city, phone, avatar_photo_id, is_admin, created_at, updated_at
+		INSERT INTO todos.users (id, name, account, email, is_admin)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id::text, name, account, email, bio, dob, city, phone, avatar_photo_id, is_admin, created_at, updated_at
 	`
 
 	user, err := scanUser(s.db.QueryRowContext(ctx, query,
@@ -278,7 +272,6 @@ func (s *service) CreateUser(ctx context.Context, newUser models.NewUser) (model
 		newUser.Name,
 		newUser.Account,
 		newUser.Email,
-		newUser.Password,
 		false, // is_admin defaults to false
 	))
 
@@ -301,7 +294,6 @@ func (s *service) ListUsers(ctx context.Context) ([]models.User, error) {
 			name,
 			account,
 			email,
-			password,
 			bio,
 			dob,
 			city,
@@ -343,7 +335,7 @@ func (s *service) PromoteUserToAdmin(ctx context.Context, userID string) (models
 		SET is_admin = true,
 		    updated_at = CURRENT_TIMESTAMP
 		WHERE id = $1
-		RETURNING id::text, name, account, email, password, bio, dob, city, phone, avatar_photo_id, is_admin, created_at, updated_at
+		RETURNING id::text, name, account, email, bio, dob, city, phone, avatar_photo_id, is_admin, created_at, updated_at
 	`
 
 	user, err := scanUser(s.db.QueryRowContext(ctx, query, userID))
@@ -581,35 +573,6 @@ func (s *service) DeleteExpiredPasswordResetTokens(ctx context.Context) error {
 }
 
 // ---------------------------------------------
-// Password Operations
-// ---------------------------------------------
-
-// UpdateUserPassword updates a user's password.
-func (s *service) UpdateUserPassword(ctx context.Context, userID string, newPassword []byte) error {
-	const query = `
-		UPDATE todos.users
-		SET password = $1,
-		    updated_at = CURRENT_TIMESTAMP
-		WHERE id = $2
-	`
-
-	result, err := s.db.ExecContext(ctx, query, newPassword, userID)
-	if err != nil {
-		return fmt.Errorf("updating user password: %w", err)
-	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("checking rows affected: %w", err)
-	}
-
-	if rowsAffected == 0 {
-		return ErrDBNotFound
-	}
-
-	return nil
-}
-
 // ---------------------------------------------
 // Helpers
 // ---------------------------------------------
@@ -627,7 +590,6 @@ func scanUser(scanner rowScanner) (models.User, error) {
 		&user.Name,
 		&user.Account,
 		&user.Email,
-		&user.Password,
 		&bio,
 		&dob,
 		&city,
