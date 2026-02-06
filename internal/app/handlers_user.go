@@ -42,7 +42,7 @@ func (a *App) HandleMe(c *gin.Context) {
 			return
 		}
 
-		req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodGet, "https://api.auth.noura.software/api/v1/auth/me", nil)
+		req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodGet, "https://api.auth.noura.software/api/v1/user/me", nil)
 		if err != nil {
 			a.toSentry(c, "me", "http", sentry.LevelError, err)
 			writeError(c, http.StatusInternalServerError, "internal_auth_request_error", nil)
