@@ -51,10 +51,23 @@ func run(logger *slog.Logger) error {
 	// 5. Initialize JWT service
 	jwtService := jwt.NewTokenService()
 
+	// // TEST: Validate external token
+	// testToken := ""
+	// fmt.Println("\n=== Testing with Updated Secret ===")
+	// claims, err := jwtService.ParseAccessToken(ctx, testToken)
+	// if err != nil {
+	// 	fmt.Printf("❌ FAILED: %v\n\n", err)
+	// } else {
+	// 	fmt.Printf("✅ SUCCESS\n")
+	// 	fmt.Printf("   User ID: %s\n", claims.Subject)
+	// 	fmt.Printf("   Is Admin: %v\n", claims.IsAdmin)
+	// 	fmt.Printf("   Expires: %v\n\n", claims.ExpiresAt.Time)
+	// }
+
 	// 6. Initialize Mailtrap service
 	emailService := mailtrap.NewMailtrapService()
 
-	// 7. App Initialization
+	// 8. App Initialization
 	iamApp := app.NewApp(
 		sqlService,
 		sentryService,
@@ -62,9 +75,9 @@ func run(logger *slog.Logger) error {
 		emailService,
 	)
 
-	// 8. Setup Gin router
+	// 9. Setup Gin router
 
-	// 9. Modern Server with configured timeouts
+	// 10. Modern Server with configured timeouts
 	srv := &http.Server{
 		Addr:         ":" + getEnv("PORT", "8080"),
 		Handler:      iamApp.RegisterRoutes(),

@@ -268,12 +268,13 @@ func (s *service) GetUserByAccount(ctx context.Context, account string) (models.
 // CreateUser inserts a new user into the database.
 func (s *service) CreateUser(ctx context.Context, newUser models.NewUser) (models.User, error) {
 	const query = `
-		INSERT INTO todos.users (name, account, email, password, is_admin)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO todos.users (id, name, account, email, password, is_admin)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id::text, name, account, email, password, bio, dob, city, phone, avatar_photo_id, is_admin, created_at, updated_at
 	`
 
 	user, err := scanUser(s.db.QueryRowContext(ctx, query,
+		newUser.ID,
 		newUser.Name,
 		newUser.Account,
 		newUser.Email,

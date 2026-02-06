@@ -38,6 +38,7 @@ type User struct {
 }
 
 type NewUser struct {
+	ID              string `json:"id"`
 	Name            string `json:"name"`
 	Account         string `json:"account"`
 	Email           string `json:"email"`

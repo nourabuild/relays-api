@@ -7,8 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetUserID fetches the authenticated user ID from the request context.
-func GetUserID(c *gin.Context) (string, error) {
+// GetClaims fetches the authenticated user claims from the request context.
+func GetClaims(c *gin.Context) (string, error) {
 	userID, ok := c.Get(UserIDKey)
 	if !ok {
 		return "", errors.New("user_id not found in context")

@@ -30,19 +30,9 @@ func (a *App) RegisterRoutes() *gin.Engine {
 
 		// User routes (protected - requires authentication)
 		user := v1.Group("/user")
-		user.Use(middleware.Authenticate(a.jwt))
 		{
 			user.GET("/me", a.HandleMe)
 			user.POST("/me/password/change", a.HandlePasswordChange)
-		}
-
-		// Admin routes (protected - requires admin role)
-		admin := v1.Group("/admin")
-		admin.Use(middleware.Authenticate(a.jwt))
-		admin.Use(middleware.AuthorizeAdmin())
-		{
-			// admin.GET("/users", a.HandleListUsers)
-			// admin.POST("/:user_id/roles/grant", a.HandleGrantAdminRole)
 		}
 	}
 
