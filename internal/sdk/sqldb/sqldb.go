@@ -186,7 +186,7 @@ func (s *service) GetUserByID(ctx context.Context, userID string) (models.User, 
 			is_admin,
 			created_at,
 			updated_at
-		FROM auth.users
+		FROM todos.users
 		WHERE id = $1
 	`
 
@@ -218,7 +218,7 @@ func (s *service) GetUserByEmail(ctx context.Context, email string) (models.User
 			is_admin,
 			created_at,
 			updated_at
-		FROM auth.users
+		FROM todos.users
 		WHERE email = $1
 	`
 
@@ -250,7 +250,7 @@ func (s *service) GetUserByAccount(ctx context.Context, account string) (models.
 			is_admin,
 			created_at,
 			updated_at
-		FROM auth.users
+		FROM todos.users
 		WHERE account = $1
 	`
 
@@ -268,7 +268,7 @@ func (s *service) GetUserByAccount(ctx context.Context, account string) (models.
 // CreateUser inserts a new user into the database.
 func (s *service) CreateUser(ctx context.Context, newUser models.NewUser) (models.User, error) {
 	const query = `
-		INSERT INTO auth.users (name, account, email, password, is_admin)
+		INSERT INTO todos.users (name, account, email, password, is_admin)
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id::text, name, account, email, password, bio, dob, city, phone, avatar_photo_id, is_admin, created_at, updated_at
 	`
@@ -309,7 +309,7 @@ func (s *service) ListUsers(ctx context.Context) ([]models.User, error) {
 			is_admin,
 			created_at,
 			updated_at
-		FROM auth.users
+		FROM todos.users
 		ORDER BY created_at DESC
 	`
 
@@ -338,7 +338,7 @@ func (s *service) ListUsers(ctx context.Context) ([]models.User, error) {
 // PromoteUserToAdmin sets the is_admin flag to true for a specific user.
 func (s *service) PromoteUserToAdmin(ctx context.Context, userID string) (models.User, error) {
 	const query = `
-		UPDATE auth.users
+		UPDATE todos.users
 		SET is_admin = true,
 		    updated_at = CURRENT_TIMESTAMP
 		WHERE id = $1
@@ -363,7 +363,7 @@ func (s *service) PromoteUserToAdmin(ctx context.Context, userID string) (models
 // CreateRefreshToken inserts a new refresh token into the database.
 func (s *service) CreateRefreshToken(ctx context.Context, newRefreshToken models.NewRefreshToken) (models.RefreshToken, error) {
 	const query = `
-		INSERT INTO auth.refresh_tokens (user_id, token, expires_at)
+		INSERT INTO todos.refresh_tokens (user_id, token, expires_at)
 		VALUES ($1, $2, $3)
 		RETURNING id::text, user_id::text, token, expires_at, revoked_at, created_at, updated_at
 	`
@@ -395,7 +395,7 @@ func (s *service) GetRefreshTokenByToken(ctx context.Context, token []byte) (mod
 			revoked_at,
 			created_at,
 			updated_at
-		FROM auth.refresh_tokens
+		FROM todos.refresh_tokens
 		WHERE token = $1
 	`
 
@@ -414,7 +414,7 @@ func (s *service) GetRefreshTokenByToken(ctx context.Context, token []byte) (mod
 // RevokeRefreshToken marks a refresh token as revoked.
 func (s *service) RevokeRefreshToken(ctx context.Context, tokenID string) error {
 	const query = `
-		UPDATE auth.refresh_tokens
+		UPDATE todos.refresh_tokens
 		SET revoked_at = CURRENT_TIMESTAMP,
 		    updated_at = CURRENT_TIMESTAMP
 		WHERE id = $1
@@ -440,7 +440,7 @@ func (s *service) RevokeRefreshToken(ctx context.Context, tokenID string) error 
 // DeleteExpiredRefreshTokens removes all expired refresh tokens from the database.
 func (s *service) DeleteExpiredRefreshTokens(ctx context.Context) error {
 	const query = `
-		DELETE FROM auth.refresh_tokens
+		DELETE FROM todos.refresh_tokens
 		WHERE expires_at < CURRENT_TIMESTAMP
 	`
 
@@ -455,7 +455,7 @@ func (s *service) DeleteExpiredRefreshTokens(ctx context.Context) error {
 // DeleteRefreshTokensByUserID removes all refresh tokens for a specific user.
 func (s *service) DeleteRefreshTokensByUserID(ctx context.Context, userID string) error {
 	const query = `
-		DELETE FROM auth.refresh_tokens
+		DELETE FROM todos.refresh_tokens
 		WHERE user_id = $1
 	`
 
@@ -474,7 +474,7 @@ func (s *service) DeleteRefreshTokensByUserID(ctx context.Context, userID string
 // CreatePasswordResetToken inserts a new password reset token into the database.
 func (s *service) CreatePasswordResetToken(ctx context.Context, newToken models.NewPasswordResetToken) (models.PasswordResetToken, error) {
 	const query = `
-		INSERT INTO auth.password_reset_tokens (user_id, token, expires_at)
+		INSERT INTO todos.password_reset_tokens (user_id, token, expires_at)
 		VALUES ($1, $2, $3)
 		RETURNING id::text, user_id::text, token, expires_at, used_at, created_at
 	`
@@ -513,7 +513,7 @@ func (s *service) GetPasswordResetToken(ctx context.Context, token string) (mode
 			expires_at,
 			used_at,
 			created_at
-		FROM auth.password_reset_tokens
+		FROM todos.password_reset_tokens
 		WHERE token = $1
 		AND used_at IS NULL
 		AND expires_at > CURRENT_TIMESTAMP
@@ -542,7 +542,7 @@ func (s *service) GetPasswordResetToken(ctx context.Context, token string) (mode
 // MarkPasswordResetTokenAsUsed marks a password reset token as used.
 func (s *service) MarkPasswordResetTokenAsUsed(ctx context.Context, tokenID string) error {
 	const query = `
-		UPDATE auth.password_reset_tokens
+		UPDATE todos.password_reset_tokens
 		SET used_at = CURRENT_TIMESTAMP
 		WHERE id = $1
 	`
@@ -567,7 +567,7 @@ func (s *service) MarkPasswordResetTokenAsUsed(ctx context.Context, tokenID stri
 // DeleteExpiredPasswordResetTokens removes all expired or used password reset tokens.
 func (s *service) DeleteExpiredPasswordResetTokens(ctx context.Context) error {
 	const query = `
-		DELETE FROM auth.password_reset_tokens
+		DELETE FROM todos.password_reset_tokens
 		WHERE expires_at < CURRENT_TIMESTAMP OR used_at IS NOT NULL
 	`
 
@@ -586,7 +586,7 @@ func (s *service) DeleteExpiredPasswordResetTokens(ctx context.Context) error {
 // UpdateUserPassword updates a user's password.
 func (s *service) UpdateUserPassword(ctx context.Context, userID string, newPassword []byte) error {
 	const query = `
-		UPDATE auth.users
+		UPDATE todos.users
 		SET password = $1,
 		    updated_at = CURRENT_TIMESTAMP
 		WHERE id = $2
