@@ -52,6 +52,7 @@ type Service interface {
 	GetUserByAccount(ctx context.Context, account string) (models.User, error)
 	CreateUser(ctx context.Context, user models.NewUser) (models.User, error)
 	ListUsers(ctx context.Context) ([]models.User, error)
+	SearchUsers(ctx context.Context, query string) ([]models.User, error)
 	PromoteUserToAdmin(ctx context.Context, userID string) (models.User, error)
 
 	// Refresh token operations
@@ -323,6 +324,50 @@ func (s *service) ListUsers(ctx context.Context) ([]models.User, error) {
 
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("iterating users: %w", err)
+	}
+
+	return users, nil
+}
+
+// SearchUsers searches for users by name, email, or account using ILIKE.
+func (s *service) SearchUsers(ctx context.Context, query string) ([]models.User, error) {
+	const sqlQuery = `
+		SELECT
+			id::text,
+			name,
+			account,
+			email,
+			bio,
+			dob,
+			city,
+			phone,
+			avatar_photo_id,
+			is_admin,
+			created_at,
+			updated_at
+		FROM todos.users
+		WHERE name ILIKE $1 OR email ILIKE $1 OR account ILIKE $1
+		ORDER BY created_at DESC
+	`
+
+	searchPattern := "%" + query + "%"
+	rows, err := s.db.QueryContext(ctx, sqlQuery, searchPattern)
+	if err != nil {
+		return nil, fmt.Errorf("searching users: %w", err)
+	}
+	defer rows.Close()
+
+	var users []models.User
+	for rows.Next() {
+		user, err := scanUser(rows)
+		if err != nil {
+			return nil, fmt.Errorf("scanning user: %w", err)
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("iterating search results: %w", err)
 	}
 
 	return users, nil

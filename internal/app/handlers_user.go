@@ -87,7 +87,39 @@ func (a *App) HandleMe(c *gin.Context) {
 			writeError(c, http.StatusInternalServerError, "internal_create_user_error", nil)
 			return
 		}
+		// Automatically add user settings, I guess... but not related here
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+func (a *App) HandleSearchUsers(c *gin.Context) {
+	// Verify authentication
+	_, err := middleware.GetClaims(c)
+	if err != nil {
+		writeError(c, http.StatusUnauthorized, "unauthorized", nil)
+		return
+	}
+
+	// Get the search query parameter
+	query := c.Query("q")
+	if query == "" {
+		c.JSON(http.StatusOK, []models.User{})
+		return
+	}
+
+	// Search users in database
+	users, err := a.db.SearchUsers(c.Request.Context(), query)
+	if err != nil {
+		a.toSentry(c, "search_users", "db", sentry.LevelError, err)
+		writeError(c, http.StatusInternalServerError, "internal_search_error", nil)
+		return
+	}
+
+	// Return empty array if no results
+	if users == nil {
+		users = []models.User{}
+	}
+
+	c.JSON(http.StatusOK, users)
 }
